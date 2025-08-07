@@ -4,19 +4,19 @@ import { clerkClient } from "@clerk/express";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import pdf from "pdf-parse/lib/pdf-parse.js ";
-
+import axios from 'axios'
 const AI = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
-export const generateArticle = async (req, res) => {
-  try {
+export const generateArticle = async (req, res) => { 
+  try { 
     const { userId } = req.auth();
     const { prompt, length } = req.body;
     const plan = req.plan;
     const free_usage = req.free_usage;
 
-    if (plan !== "Premium" && free_usage >= 10) {
+    if (plan !== "premium" && free_usage >= 10) {
       return res.json({
         success: false,
         message: "Limit reached. Upgrade to continue.",
@@ -37,17 +37,18 @@ export const generateArticle = async (req, res) => {
 
     await sql`INSERT INTO creations(user_Id,prompt,content,type)
     VALUES(${userId},${prompt},${content},'article')`;
-    if (plan !== "Premium") {
+    if (plan !== "premium") {
       await clerkClient.users.updateUserMetadata(userId, {
         privateMetadata: {
           free_usage: free_usage + 1,
         },
       });
-      res.json({
+      
+    } 
+    res.json({
         success: true,
         content,
-      });
-    }
+      }); 
   } catch (error) {
     console.log(error.message);
     res.send({
@@ -65,7 +66,7 @@ export const generateBlogTitle = async (req, res) => {
     const plan = req.plan;
     const free_usage = req.free_usage;
 
-    if (plan !== "Premium" && free_usage >= 10) {
+    if (plan !== "premium" && free_usage >= 10) {
       return res.json({
         success: false,
         message: "Limit reached. Upgrade to continue.",
@@ -81,17 +82,17 @@ export const generateBlogTitle = async (req, res) => {
 
     await sql`INSERT INTO creations(user_Id,prompt,content,type)
     VALUES(${userId},${prompt},${content},'blog-title')`;
-    if (plan !== "Premium") {
+    if (plan !== "premium") {
       await clerkClient.users.updateUserMetadata(userId, {
         privateMetadata: {
           free_usage: free_usage + 1,
         },
       });
-      res.json({
+    }
+    res.json({
         success: true,
         content,
       });
-    }
   } catch (error) {
     console.log(error.message);
     res.send({
@@ -108,7 +109,7 @@ export const generateImage = async (req, res) => {
     const plan = req.plan;
     const free_usage = req.free_usage;
 
-    if (plan !== "Premium") {
+    if (plan !== "premium") {
       return res.json({
         success: false,
         message: "This feature is only available for Premium users.",
@@ -117,7 +118,7 @@ export const generateImage = async (req, res) => {
     const formData = new FormData();
     formData.append("prompt", prompt);
 
-    const { data } = await axios.POST(
+    const { data } = await axios.post(
       "https://clipdrop-api.co/text-to-image/v1",
       formData,
       {
@@ -152,10 +153,10 @@ export const generateImage = async (req, res) => {
 export const removeImageBackground = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
 
-    if (plan !== "Premium") {
+    if (plan !== "premium") {
       return res.json({
         success: false,
         message: "This feature is only available for Premium users.",
@@ -188,14 +189,15 @@ export const removeImageBackground = async (req, res) => {
   }
 };
 
+
 export const removeImageObject = async (req, res) => {
   try {
     const { userId } = req.auth();
     const { object } = req.body;
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
 
-    if (plan !== "Premium") {
+    if (plan !== "premium") {
       return res.json({
         success: false,
         message: "This feature is only available for Premium users.",
@@ -235,7 +237,7 @@ export const resumeReview = async (req, res) => {
     const resume = req.file;
     const plan = req.plan;
 
-    if (plan !== "Premium") {
+    if (plan !== "premium") {
       return res.json({
         success: false,
         message: "This feature is only available for Premium users.",
@@ -249,7 +251,7 @@ export const resumeReview = async (req, res) => {
       });
     }
     const dataBuffer = fs.readFileSync(resume.path);
-    const pdfData = pdf(dataBuffer);
+    const pdfData = await pdf(dataBuffer);
 
     const prompt = `Review the following resume and provide constructive feedback on its strength, weakness, and areas for improvement.Resume-content:\n\n ${pdfData.text}`;
 

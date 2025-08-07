@@ -11,7 +11,7 @@ import {
 import { upload } from "../middlewares/multer.js";
 
 const aiRouter = express.Router();
-
+ 
 aiRouter.post("/generate-article", auth, generateArticle);
 aiRouter.post("/generate-blog-title", auth, generateBlogTitle);
 aiRouter.post("/generate-image", auth, generateImage);
