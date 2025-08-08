@@ -3,7 +3,7 @@ import sql from "../configs/db.js";
 import { clerkClient } from "@clerk/express";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import pdf from "pdf-parse/lib/pdf-parse.js ";
+import pdf from "pdf-parse/lib/pdf-parse.js";
 import axios from 'axios'
 const AI = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,
