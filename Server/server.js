@@ -18,8 +18,7 @@ app.use(clerkMiddleware());
 app.use("/api/ai", requireAuth(), aiRouter);
 app.use("/api/user", requireAuth(), userRouter);
 
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server is listening to PORT ${PORT}`);
-// });
-export default app;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is listening to PORT ${PORT}`);
+});
