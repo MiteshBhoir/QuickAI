@@ -25,8 +25,7 @@ const WriteArticle = () => {
 
 
   const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    console.log("Token:", await getToken());
+    e.preventDefault(); 
 
     try {
       setLoading(true);
@@ -38,8 +37,7 @@ const WriteArticle = () => {
             Authorization: `Bearer ${await getToken()}` 
 
           }
-        })
-        console.log(data)
+        }) 
       if (data.success) {
         setContent(data.content) 
       } else {
